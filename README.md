@@ -22,6 +22,3 @@ Determining tweet authorship.
   
 * [Notebook_gs_nb.py](https://github.com/alejandrox1/tweet_authorship/blob/master/Notebook_gs_nb.py) <br/>
   Parameter tunning for `Naive Bayes` model.
-  
-* [Notebook_gs_sgd.py](https://github.com/alejandrox1/tweet_authorship/blob/master/Notebook_gs_sgd.py) <br/>
-  Parameter tunning for Linear classifiers (SVM, logistic regression, a.o.) with SGD training (preliminary).
