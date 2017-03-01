@@ -27,7 +27,7 @@ delim="########################################################################"
 echo "Running Gridsearches with max ngram: $maxgram and $njobs CPUs" > $fout 2>&1
 
 # Get Dataset
-python Notebook_mining.py > $fout 2>&1
+python Notebook_mining.py >> $fout 2>&1
 
 # Hyperparameter Tuning
 echo -e "\n\n\n $delim \n\t\t\tGRIDSEARCH\n $delim \n\n\n " >> $fout
