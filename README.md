@@ -2,7 +2,7 @@
 Determining tweet authorship.
 
 # Workflow
-[PLAGIARISM.sh](https://github.com/alejandrox1/tweet_authorship) can be used to run a series of steps to obtain the tweets of different users, clean the data, and store is in a `csv` format for later use. This script will also perform various `GridSearches` in order to find the best parameters for machine learning classifiers that will later be used to tell whether a tweet belogs or not to a given account.
+[PLAGIARISM.sh](https://github.com/alejandrox1/tweet_authorship/blob/master/PLAGIARISM.sh) can be used to run a series of steps to obtain the tweets of different users, clean the data, and store is in a `csv` format for later use. This script will also perform various `GridSearches` in order to find the best parameters for machine learning classifiers that will later be used to tell whether a tweet belogs or not to a given account.
 
 [plagiarism.ipynb](https://github.com/alejandrox1/tweet_authorship/blob/master/plagiarism.ipynb) contains the validation of ensemble learners and learning curves to visualize the quality of our models.
 
