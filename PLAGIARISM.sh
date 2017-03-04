@@ -39,7 +39,7 @@ echo "Running Gridsearches with max ngram: \
 
 # Get Dataset
 python Notebook_mining.py \
-	--batch $sbatch --tweet_lim $tweet_lim= >> $fout 2>&1
+	--batch $sbatch --tweet_lim $tweet_lim >> $fout 2>&1
 
 # Hyperparameter Tuning
 echo -e "\n\n\n $delim \n\t\t\tGRIDSEARCH\n $delim \n\n\n " >> $fout
