@@ -7,12 +7,16 @@ screen_names = ['AP', 'FoxNews', 'nytimes', 'NBCNews', 'CNN']
 
 # command line arguments
 args = mining_cml()
-small_batch = args.batch
+small_batch = args.batch.lower()
+if 'y' in small_batch:
+    small_batch=True
+else:
+    small_batch=False
 tweet_lim = args.tweet_lim
 
 # parameters
 client = get_twitter_client()
-start = datetime.datetime(2016, 11, 1)  
+start = datetime.datetime(2016, 10, 1)  
 end = datetime.datetime(2017, 1, 31)    
 fname_tweet_ids = 'all_ids.json'
 f_authorship = 'users/authorship.csv'

@@ -36,11 +36,13 @@ from sklearn.model_selection import GridSearchCV
 from config import *
 
 # COMMAND LINE OPTIONS
-def cml():
+def gs_cml():
     """Command line arguments for gridsearches
 
     Params
     ------
+    infile : str {default users/authorship.csv}
+            Contains tweets, tweet_id, user_id.
     ngram : int {default 1}
             n-gram. Default is `1`, an unigram .
     jobs : int {default -1}
@@ -52,10 +54,12 @@ def cml():
     {argparse-obj} cml arguments container.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ngram", help="max size for n-grams", default=1,  
-                        type=int)
-    parser.add_argument("--jobs",  help="number of CPUs",       default=-1, 
-                        type=int)
+    parser.add_argument("--infile", help="input file",
+                        default="users/authorship.csv", type=str)
+    parser.add_argument("--ngram",  help="max size for n-grams", 
+                        default=1,                      type=int)
+    parser.add_argument("--jobs",   help="number of CPUs", 
+                        default=-1,                     type=int)
     args = parser.parse_args()
     return args
 
@@ -76,10 +80,10 @@ def mining_cml():
     {argparse-obj} cml arguments container.                                     
     """
     parser = argparse.ArgumentParser()                                          
-    parser.add_argument("--batch", help="Mine a small batch of tweets", 
-                        default=True, type=bool)                                               
+    parser.add_argument("--batch",      help="Mine a small batch of tweets", 
+                        default='y', type=str)                                               
     parser.add_argument("--tweet_lim",  help="Max number of tweets to mine",
-                        default=-1, type=int)                                               
+                        default=-1,  type=int)                                               
     args = parser.parse_args()                                                  
     return args 
 
@@ -247,7 +251,8 @@ def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True):
         time.sleep(delay)
         
         try:
-            found_tweets = driver.find_elements_by_css_selector(tweet_selector)
+            found_tweets = \
+            driver.find_elements_by_css_selector('li.js-stream-item')
             increment = 10
 
             # Scroll through the Twitter search page
@@ -276,8 +281,8 @@ def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True):
                         ids_total += 1
 
                         # break if tweet_lim has been reached                           
-                        if total_tweets == tweet_lim:                                   
-                            return total_tweets
+                        if ids_total == tweet_lim:                                   
+                            return ids_total
 
                     except StaleElementReferenceException as e:
                         print('lost element reference', tweet)
