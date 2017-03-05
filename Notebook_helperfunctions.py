@@ -85,8 +85,8 @@ def mining_cml():
                         default="users/authorship.csv",                         
                         type=str)
     parser.add_argument("--batch",      
-                        help="Mine a small batch of tweets (default: y) by 
-                        using twitter's API.", 
+                        help="Mine a small batch of tweets (default: y) by " 
+                        "using twitter's API.", 
                         default='y', 
                         type=str)                                               
     parser.add_argument("--tweet_lim",  
@@ -94,8 +94,8 @@ def mining_cml():
                         default=-1,  
                         type=int)
     parser.add_argument("--reset",  
-                        help="Reset connection to continue getting tweets
-                        (default: n skips the tweet acquisition).",    
+                        help="Reset connection to continue getting tweets "
+                        "(default: n skips the tweet acquisition).",    
                         default='n',  
                         type=str)
     args = parser.parse_args()   
