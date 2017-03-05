@@ -101,7 +101,7 @@ def mining_cml():
     args = parser.parse_args()   
 
     # if batch use tweepy
-    if 'y' in args.batchlower():                                                          
+    if 'y' in args.batch.lower():                                                          
         args.batch=True                                                            
     else:                                                                           
         args.batch=False 
