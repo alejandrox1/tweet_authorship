@@ -80,37 +80,24 @@ def mining_cml():
     {argparse-obj} cml arguments container.                                     
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--outfile", 
+    parser.add_argument("-v", "--verbose", 
+                        help="increase output verbosity",        
+                        action="store_true")
+    parser.add_argument("-o", "--outfile", 
                         help="input file (defaut: users/authorship.csv)",       
                         default="users/authorship.csv",                         
                         type=str)
-    parser.add_argument("--batch",      
-                        help="Mine a small batch of tweets (default: y) by " 
-                        "using twitter's API.", 
-                        default='y', 
-                        type=str)                                               
-    parser.add_argument("--tweet_lim",  
+    parser.add_argument("-s", "--smallbatch",      
+                        help="Mine small batch of tweets using twitter's API.", 
+                        action="store_true")                                               
+    parser.add_argument("-l", "--tweet_lim",  
                         help="Max number of tweets to mine (default: -1).",
                         default=-1,  
                         type=int)
-    parser.add_argument("--reset",  
-                        help="Reset connection to continue getting tweets "
-                        "(default: n skips the tweet acquisition).",    
-                        default='n',  
-                        type=str)
+    parser.add_argument("-r", "--reset",  
+                        help="Reset connection to continue getting tweets ",    
+                        action="store_true")
     args = parser.parse_args()   
-
-    # if batch use tweepy
-    if 'y' in args.batch.lower():                                                          
-        args.batch=True                                                            
-    else:                                                                           
-        args.batch=False 
-    # if reset skip tweet retrieval
-    if 'y' in args.reset.lower():                                                       
-        args.reset=True
-        args.batch=False
-    else:                                                                       
-        args.reset=False
 
     return args 
 

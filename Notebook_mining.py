@@ -11,7 +11,7 @@ args = mining_cml()
 small_batch = args.batch
 tweet_lim = args.tweet_lim
 reset = args.reset
-    
+verbosity = args.verbose    
 
 # parameters
 client = get_twitter_client()
@@ -24,12 +24,13 @@ total_tweets = []
 ### GET TWEETS
 if not reset:
     print('Getting Tweets...')
-    if small_batch:
+    if small_batch: # use tweepy
         for screen_name in screen_names:
             num_tweets = get_user_tweets(client, screen_name, 
                                          tweet_lim=tweet_lim)
             total_tweets.append(num_tweets)
-    else: 
+
+    else: # use selenium extension
         for screen_name in screen_names:
             num_tweets = get_all_user_tweets(screen_name, start, end,
                                          tweet_lim=tweet_lim)
@@ -47,7 +48,7 @@ with open(f_authorship, 'w') as fout:
     writer.writerow(['text','id','user_id'])
 
     for screen_name in screen_names:
-        if small_batch:
+        if small_batch: # use tweepy
             fin = 'users/{0}/usr_timeline_{0}.jsonl'.format(screen_name)
             with open(fin, 'r') as f:
                 for line in f:
@@ -55,22 +56,52 @@ with open(f_authorship, 'w') as fout:
                     writer.writerow([tweet['text'], 
                                      tweet['id'], 
                                      tweet['user']['id']])
-        else:
-            fin = 'users/{0}/usr_tweetids_{0}.jsonl'.format(screen_name)
-            with open(fin, 'r') as f:
-                for line in f:
-                    ids = json.loads(line)
-                    
-                    for tweetId in ids:
-                        try:
-                            tweet = client.get_status(tweetId)
-                            writer.writerow([tweet.text, 
-                                             tweet.id, 
-                                             tweet.user.id])
-                        except TweepError as e:
-                            print(e)
-                            time.sleep(60*15)
 
+        else: # use selenium extension
+            fin = 'users/{0}/usr_tweetids_{0}.jsonl'.format(screen_name)
+            fcheck = 'users/{0}/checkpoints_{0}.txt'.format(screen_name)
+            if not os.path.isfile(fcheck): # if no checkpoint file
+                with open(fin, 'r') as f, open(fcheck, 'w') as c:
+                    for line in f:
+                        # save the location of file
+                        c.write( '{}\n'.format(f.tell()) )
+                        # load ids
+                        ids = json.loads(line)
+                    
+                        for tweetId in ids:
+                            try:
+                                tweet = client.get_status(tweetId)
+                                writer.writerow([tweet.text, 
+                                                tweet.id, 
+                                                tweet.user.id])
+                            except TweepError as e:
+                                if verbosity:
+                                    print(e)
+                                time.sleep(60*15)
+
+            else: # if checkpoints file allready exists
+		with open(fin, 'r') as f, open(fcheck, 'r+') as c:    
+                    checkpoints = c.readlines()
+                    checkpoints = [check.strip('\n') for check in checkpoints 
+                                   if check.strip('\n')!='']
+                    # go to last checkpoint
+                    f.seek(int(checkpoints[-1]))
+                    for line in f:                                              
+                        # save the location of file
+                        c.write( '{}\n'.format(f.tell()) )
+                        # load ids
+                        ids = json.loads(line)                                  
+                                                                                
+                        for tweetId in ids:                                     
+                            try:                                                
+                                tweet = client.get_status(tweetId)              
+                                writer.writerow([tweet.text,                    
+                                                tweet.id,                       
+                                                tweet.user.id])                 
+                            except TweepError as e:                             
+                                if verbosity:
+                                    print(e)                                        
+                                time.sleep(60*15)
 
 print('done writing results.\nCheck: {}'.format(f_authorship))
 
