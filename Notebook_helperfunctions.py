@@ -84,7 +84,7 @@ def mining_cml():
                         help="increase output verbosity",        
                         action="store_true")
     parser.add_argument("-o", "--outfile", 
-                        help="input file (defaut: users/authorship.csv)",       
+                        help="output file (defaut: users/authorship.csv)",       
                         default="users/authorship.csv",                         
                         type=str)
     parser.add_argument("-s", "--smallbatch",      
@@ -98,6 +98,7 @@ def mining_cml():
                         help="Reset connection to continue getting tweets ",    
                         action="store_true")
     args = parser.parse_args()   
+
 
     return args 
 
@@ -321,7 +322,8 @@ def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True):
 ### PREPROCESSING
 stop = stopwords.words('english')
 def preprocessor(text):
-    re_emoji =  r"(\:\w+\:|\<[\/\\]?3|[\(\)\\\D|\*\$][\-\^]?[\:\;\=o.O]|[\:\;\=B8][\-\^]?[3DOPp\@\$\*\\\)\(\/\|])(?=\s|[\!\.\?]|$)"
+    re_emoji =  r"(\:\w+\:|\<[\/\\]?3|[\(\)\\\D|\*\$][\-\^]?[\:\;\=o.O]|"
+    "[\:\;\=B8][\-\^]?[3DOPp\@\$\*\\\)\(\/\|])(?=\s|[\!\.\?]|$)"
     emoticons = re.findall(re_emoji, text)
     text = re.sub('[\W]+', ' ', text) + ' '.join(emoticons).replace('-', '')
     return text

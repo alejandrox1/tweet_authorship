@@ -4,21 +4,21 @@ from tweepy import TweepError
 #############################################################################
 ###                             INPUT                                     ###
 #############################################################################
-screen_names = ['AP', 'FoxNews', 'nytimes', 'NBCNews', 'CNN']
+screen_names = ['X1alejandro3x', 'HEPfeickert']
 
 # command line arguments
 args = mining_cml()
-small_batch = args.batch
+verbosity = args.verbose
+f_authorship = args.outfile
+small_batch = args.smallbatch
 tweet_lim = args.tweet_lim
 reset = args.reset
-verbosity = args.verbose    
 
 # parameters
 client = get_twitter_client()
-start = datetime.datetime(2016, 10, 1)  
+start = datetime.datetime(2016, 1, 1)  
 end = datetime.datetime(2017, 1, 31)    
 fname_tweet_ids = 'all_ids.json'
-f_authorship = 'users/authorship.csv'
 total_tweets = []
 
 ### GET TWEETS
@@ -62,7 +62,7 @@ with open(f_authorship, 'w') as fout:
             fcheck = 'users/{0}/checkpoints_{0}.txt'.format(screen_name)
             if not os.path.isfile(fcheck): # if no checkpoint file
                 with open(fin, 'r') as f, open(fcheck, 'w') as c:
-                    for line in f:
+                    for line in iter(f.readline, ''):
                         # save the location of file
                         c.write( '{}\n'.format(f.tell()) )
                         # load ids
@@ -80,13 +80,14 @@ with open(f_authorship, 'w') as fout:
                                 time.sleep(60*15)
 
             else: # if checkpoints file allready exists
-		with open(fin, 'r') as f, open(fcheck, 'r+') as c:    
+                with open(fin, 'r') as f, open(fcheck, 'r+') as c:    
                     checkpoints = c.readlines()
                     checkpoints = [check.strip('\n') for check in checkpoints 
                                    if check.strip('\n')!='']
                     # go to last checkpoint
-                    f.seek(int(checkpoints[-1]))
-                    for line in f:                                              
+                    if checkpoints:
+                        f.seek(int(checkpoints[-1]))
+                    for line in iter(f.readline, ''):                                              
                         # save the location of file
                         c.write( '{}\n'.format(f.tell()) )
                         # load ids
