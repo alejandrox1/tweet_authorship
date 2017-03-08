@@ -12,6 +12,7 @@ from tweepy import API
 from tweepy import OAuthHandler
 from tweepy import Cursor
 
+from xvfbwrapper import Xvfb
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException 
@@ -82,6 +83,9 @@ def mining_cml():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", 
                         help="increase output verbosity",        
+                        action="store_true")
+    parser.add_argument("-d", "--virtual",                                      
+                        help="Use virtual display (use on EC2 instance).",                       
                         action="store_true")
     parser.add_argument("-o", "--outfile", 
                         help="output file (defaut: users/authorship.csv)",       
@@ -233,7 +237,8 @@ def get_user_tweets(client, screen_name, tweet_lim=3200, no_rt=True):
     return total_tweets
 
 
-def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True):
+def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True,
+                       virtuald=False):
     """
     Params
     ------
@@ -252,7 +257,11 @@ def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True):
 
     # name of file for saving tweet ids
     fname_tweet_ids = 'users/{0}/usr_tweetids_{0}.jsonl'.format(screen_name)
-    
+   
+    # Headless displays with Xvfb (X virtual framebuffer)
+    if virtuald:
+        vdisplay = Xvfb()
+        vdisplay.start()
     # Selenium parames
     delay = 1  # time to wait on each page load before reading the page
     driver = webdriver.Chrome() 
@@ -298,24 +307,27 @@ def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True):
                         ids_total += 1
 
                         # break if tweet_lim has been reached                           
-                        if ids_total == tweet_lim:                                   
+                        if ids_total == tweet_lim:       
+                            print('{} tweets found.'.format(ids_total))
                             return ids_total
 
                     except StaleElementReferenceException as e:
-                        print('lost element reference', tweet)
+                        print('Lost element reference.', tweet)
                         
                 # Save ids to file
                 data_to_write = list(set(ids))
                 fout.write(json.dumps(data_to_write)+'\n')
         
         except NoSuchElementException:
-            print('no tweets on this day')
+            print('No tweets found.')
 
         start = increment_day(start, 1)
     
     # Close selenium driver
     driver.close()
-    print('{} tweets found total'.format(ids_total))
+    if virtuald:
+        vdisplay.stop()
+    print('{} tweets found.'.format(ids_total))
     return ids_total
 
 

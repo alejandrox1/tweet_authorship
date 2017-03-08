@@ -9,6 +9,7 @@ screen_names = ['X1alejandro3x', 'HEPfeickert']
 # command line arguments
 args = mining_cml()
 verbosity = args.verbose
+virtuald = args.virtual
 f_authorship = args.outfile
 small_batch = args.smallbatch
 tweet_lim = args.tweet_lim
@@ -16,8 +17,8 @@ reset = args.reset
 
 # parameters
 client = get_twitter_client()
-start = datetime.datetime(2016, 1, 1)  
-end = datetime.datetime(2017, 1, 31)    
+start = datetime.datetime(2013, 1, 1)  
+end = datetime.datetime.today()    
 fname_tweet_ids = 'all_ids.json'
 total_tweets = []
 
@@ -26,14 +27,17 @@ if not reset:
     print('Getting Tweets...')
     if small_batch: # use tweepy
         for screen_name in screen_names:
-            num_tweets = get_user_tweets(client, screen_name, 
+            num_tweets = get_user_tweets(client, 
+                                         screen_name, 
                                          tweet_lim=tweet_lim)
             total_tweets.append(num_tweets)
 
     else: # use selenium extension
         for screen_name in screen_names:
-            num_tweets = get_all_user_tweets(screen_name, start, end,
-                                         tweet_lim=tweet_lim)
+            num_tweets = get_all_user_tweets(screen_name, 
+                                             start, end,
+                                             tweet_lim=tweet_lim, 
+                                             virtuald=virtuald)
             total_tweets.append(num_tweets)
     print('Found {} tweets.'.format(sum(total_tweets)))
 
