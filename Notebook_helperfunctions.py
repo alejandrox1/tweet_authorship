@@ -4,6 +4,7 @@ import argparse
 import time
 import datetime
 import re
+import string
 import json
 import csv
 import pickle
@@ -333,12 +334,39 @@ def get_all_user_tweets(screen_name, start, end, tweet_lim=3200, no_rt=True,
 
 ### PREPROCESSING
 stop = stopwords.words('english')
-def preprocessor(text):
-    re_emoji =  r"(\:\w+\:|\<[\/\\]?3|[\(\)\\\D|\*\$][\-\^]?[\:\;\=o.O]|"
-    "[\:\;\=B8][\-\^]?[3DOPp\@\$\*\\\)\(\/\|])(?=\s|[\!\.\?]|$)"
-    emoticons = re.findall(re_emoji, text)
-    text = re.sub('[\W]+', ' ', text) + ' '.join(emoticons).replace('-', '')
-    return text
+def preprocessor(doc):
+   """Proportion of characters in document                                     
+                                                                                
+    :( :) :P :p :O :3 :| :/ :\ :$ :* :@                                         
+    :-( :-) :-P :-p :-O :-3 :-| :-/ :-\ :-$ :-* :-@                             
+    :^( :^) :^P :^p :^O :^3 :^| :^/ :^\ :^$ :^* :^@                             
+    ): (: $: *:                                                                 
+    )-: (-: $-: *-:                                                             
+    )^: (^: $^: *^:                                                             
+    <3 </3 <\3                                                                  
+    o.O O.O O.o                                                                 
+    :smile: :hug: :pencil:                                                      
+    """                                                                         
+    re_url = r"(http|https):\/\/.\S+"                                           
+    re_emoji = r"(\:\w+\:|\<[\/\\]?3|[\(\)\\\D|\*\$][\-\^]?[\:\;\=]|[\:\;\=B8][\-\^]?"\
+    "[3DOPp\@\$\*\\\)\(\/\|])(?=\s|[\!\.\?]|$)"    
+    # remove urls                                                               
+    doc = re.sub(re_url, "", doc)                                               
+    # remove emoticons                                                          
+    doc = re.sub(re_emoji, "", doc)                                             
+    # remove emojis   
+    try:
+        # UCS-4
+        extra = re.compile(u'[U00010000-U0010ffff]')
+        doc = extra.sub('', doc)
+    except re.error:
+        # UCS-2
+        extra = re.compile(u'[uD800-uDBFF][uDC00-uDFFF]')
+        doc = extra.sub('', doc)
+    regex = re.compile('[%s]' % re.escape(string.punctuation))
+    doc = regex.sub('', doc)
+    
+    return doc
 
 
 def tokenizer(text):
